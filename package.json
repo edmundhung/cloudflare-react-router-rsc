@@ -1,23 +1,25 @@
 {
-  "name": "react-router-rsc-cloudflare",
+  "name": "cloudflare-react-router-rsc",
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "pnpm run cf-typegen",
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "preview": "pnpm run build && vite preview",
+    "deploy": "pnpm run build && wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "typecheck": "pnpm run cf-typegen && react-router typegen && tsc"
   },
   "dependencies": {
-    "@react-router/serve": "7.12.0",
-    "@remix-run/node-fetch-server": "0.9.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router": "7.12.0"
+    "react-router": "^7.13.0"
   },
   "devDependencies": {
-    "@react-router/dev": "7.12.0",
-    "@react-router/fs-routes": "7.12.0",
+    "@cloudflare/vite-plugin": "^1.22.1",
+    "@react-router/dev": "^7.13.0",
+    "@react-router/fs-routes": "^7.13.0",
     "@tailwindcss/vite": "4.1.13",
     "@types/node": "24.5.2",
     "@types/react": "^19.2.7",
@@ -27,6 +29,7 @@
     "typescript": "5.9.2",
     "vite": "7.1.6",
     "vite-plugin-devtools-json": "1.0.0",
-    "vite-tsconfig-paths": "5.1.4"
+    "vite-tsconfig-paths": "5.1.4",
+    "wrangler": "^4.0.0"
   }
 }

@@ -1,65 +1,69 @@
-# Welcome to React Router! (Experimental RSC)
+# React Router RSC on Cloudflare Workers
 
-⚠️ **EXPERIMENTAL**: This template demonstrates React Server Components with React Router. This is experimental technology and not recommended for production use.
+This template runs React Router's experimental RSC Framework Mode on Cloudflare Workers.
 
-A modern template for exploring React Server Components (RSC) with React Router, powered by Vite.
+> **Warning**: RSC Framework Mode is experimental.
 
-## Features
-
-- 🧪 **Experimental React Server Components**
-- 🚀 Server-side rendering with RSC
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization with Vite
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-- 📚 [React Server Components guide](https://reactrouter.com/how-to/react-server-components)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+## Quick Start
 
 ```bash
-npm install
+pnpm install
+pnpm dev
 ```
 
-### Development
+## Cloudflare Setup Guide
 
-Start the development server with HMR:
+Starting from the [RSC Framework Mode template](https://github.com/remix-run/react-router-templates/tree/main/unstable_rsc-framework-mode):
+
+### 1. Install dependencies
 
 ```bash
-npm run dev
+pnpm add -D @cloudflare/vite-plugin wrangler
+pnpm remove @react-router/serve @remix-run/node-fetch-server
 ```
 
-Your application will be available at `http://localhost:5173`.
+### 2. Add Cloudflare plugin to vite.config.ts
 
-## Building for Production
+```ts
+import { cloudflare } from "@cloudflare/vite-plugin";
 
-Create a production build:
-
-```bash
-npm run build
+export default defineConfig({
+	plugins: [
+		cloudflare({
+			viteEnvironment: {
+				name: "rsc",
+				childEnvironments: ["ssr"],
+			},
+		}),
+		// ... keep existing plugins
+	],
+});
 ```
 
-## Running Production Build
+### 3. Create wrangler.json
 
-Run the production server:
-
-```bash
-npm start
+```json
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "my-app",
+	"main": "@react-router/dev/config/default-rsc-entries/entry.rsc",
+	"compatibility_date": "2026-01-29",
+	"compatibility_flags": ["nodejs_compat"]
+}
 ```
 
-## Understanding React Server Components
+- `main` points to React Router's default RSC entry (no custom worker needed)
+- `nodejs_compat` is required for React's usage on Async Local Storage APIs
 
-Learn more about React Server Components with React Router in our [comprehensive guide](https://reactrouter.com/how-to/react-server-components).
+### 4. Other files
 
-## Styling
+The rest follows the [standard Cloudflare React Router setup](https://developers.cloudflare.com/workers/frameworks/framework-guides/react-router/):
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+- [package.json](./package.json) - Add `preview`, `deploy`, `cf-typegen` scripts
+- [tsconfig.json](./tsconfig.json), [tsconfig.node.json](./tsconfig.node.json), [tsconfig.cloudflare.json](./tsconfig.cloudflare.json)
+- [.gitignore](./.gitignore) - Add `/.wrangler/`
 
----
+## Resources
 
-Built with ❤️ using React Router. 
+- [React Router RSC Docs](https://reactrouter.com/how-to/react-server-components)
+- [Cloudflare Vite Plugin](https://developers.cloudflare.com/workers/vite-plugin/)
