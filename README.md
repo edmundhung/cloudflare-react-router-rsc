@@ -22,7 +22,7 @@ pnpm add -D @cloudflare/vite-plugin wrangler
 pnpm remove @react-router/serve @remix-run/node-fetch-server
 ```
 
-### 2. Add Cloudflare plugin to vite.config.ts
+### 2. Update vite.config.ts
 
 ```ts
 import { cloudflare } from "@cloudflare/vite-plugin";
@@ -35,10 +35,25 @@ export default defineConfig({
 				childEnvironments: ["ssr"],
 			},
 		}),
-		// ... keep existing plugins
+		// ... keep existing plugins, but update rsc():
+		rsc({ serverHandler: false }),
 	],
+	environments: {
+		rsc: {
+			optimizeDeps: {
+				exclude: ["react-router"],
+			},
+		},
+		ssr: {
+			optimizeDeps: {
+				exclude: ["react-router"],
+			},
+		},
+	},
 });
 ```
+
+> **Note**: See [Known Issues](#known-issues) for why `serverHandler: false` and `optimizeDeps.exclude` are needed.
 
 ### 3. Create wrangler.json
 
@@ -62,6 +77,22 @@ The rest follows the [standard Cloudflare React Router setup](https://developers
 - [package.json](./package.json) - Add `preview`, `deploy`, `cf-typegen` scripts
 - [tsconfig.json](./tsconfig.json), [tsconfig.node.json](./tsconfig.node.json), [tsconfig.cloudflare.json](./tsconfig.cloudflare.json)
 - [.gitignore](./.gitignore) - Add `/.wrangler/`
+
+## Known Issues
+
+These workarounds will be resolved in future versions of the plugins.
+
+### Hook errors on first dev load
+
+`Invalid hook call` errors after clearing `node_modules/.vite`. The `reactRouterRSC` plugin's `optimizeDeps.include` for `react-router` can cause duplicate React instances in worker environments.
+
+**Fix**: Exclude `react-router` from optimization in `rsc`/`ssr` environments (see config above).
+
+### `cloudflare:*` imports fail in preview mode
+
+`ERR_UNSUPPORTED_ESM_URL_SCHEME` when using Durable Objects or other `cloudflare:*` imports. The `@vitejs/plugin-rsc` preview server tries to import the RSC entry in Node.js, which doesn't support `cloudflare:*`.
+
+**Fix**: Set `rsc({ serverHandler: false })` since the Cloudflare plugin handles requests via workerd.
 
 ## Resources
 
