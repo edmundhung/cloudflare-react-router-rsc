@@ -1,12 +1,26 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "cloudflare-react-router-rsc",
-	"main": "@react-router/dev/config/default-rsc-entries/entry.rsc",
+	"main": "./app/entry.rsc.tsx",
 	"compatibility_date": "2026-01-29",
 	"compatibility_flags": ["nodejs_compat"],
 	"vars": {
 		"DISCORD_URL": "https://discord.com/invite/cloudflaredev"
 	},
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "MY_DURABLE_OBJECT",
+				"class_name": "MyDurableObject"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": ["MyDurableObject"]
+		}
+	],
 	"observability": {
 		"enabled": true
 	}
