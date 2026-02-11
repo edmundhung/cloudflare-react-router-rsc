@@ -4,6 +4,9 @@
 	"main": "@react-router/dev/config/default-rsc-entries/entry.rsc",
 	"compatibility_date": "2026-01-29",
 	"compatibility_flags": ["nodejs_compat"],
+	"vars": {
+		"DISCORD_URL": "https://discord.com/invite/cloudflaredev"
+	},
 	"observability": {
 		"enabled": true
 	}
